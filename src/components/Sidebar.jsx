@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useState, memo } from "react";
 
-function Sidebar({ todo, onHandleshow, onHandleUpdate }) {
+const Sidebar = memo(({ todo, onHandleshow, onHandleUpdate }) => {
   const [inputValue, setInputValue] = useState(todo.text);
   const [isImportant, setIsImportant] = useState(todo.isImportant);
   const [isCompleted, setIsCompleted] = useState(todo.isCompleted);
@@ -50,7 +50,8 @@ function Sidebar({ todo, onHandleshow, onHandleUpdate }) {
       </div>
     </div>
   );
-}
+});
+
 Sidebar.propTypes = {
   todo: PropTypes.shape({
     text: PropTypes.string.isRequired,
@@ -60,4 +61,5 @@ Sidebar.propTypes = {
   onHandleshow: PropTypes.func.isRequired,
   onHandleUpdate: PropTypes.func.isRequired,
 };
+Sidebar.displayName = "Sidebar";
 export default Sidebar;

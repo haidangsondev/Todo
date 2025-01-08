@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
-
-function TodoItem({ todo, onCheckTodo, onHandleEdit, onHandleDelete }) {
+import { memo } from "react";
+const TodoItem = memo(({ todo, onCheckTodo, onHandleEdit, onHandleDelete }) => {
   return (
     <div className="todo__item">
       <div className="todo__left">
@@ -22,7 +22,9 @@ function TodoItem({ todo, onCheckTodo, onHandleEdit, onHandleDelete }) {
       </div>
     </div>
   );
-}
+});
+
+TodoItem.displayName = "TodoItem";
 
 TodoItem.propTypes = {
   todo: PropTypes.shape({

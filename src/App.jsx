@@ -1,26 +1,28 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import "./App.css";
-import TodoItem from "./components/TodoItem";
 import Sidebar from "./components/Sidebar";
 import FilterPanel from "./components/FilterPanel";
+import TodoList from "./components/TodoList";
 function App() {
   const [inputValue, setInputValue] = useState("");
   const [hide, setHide] = useState(false);
   const [todoShow, setTodoShow] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("All");
-
+  const [search, setSearch] = useState("");
   const [todoList, setTodoList] = useState([
     {
       id: 1,
       text: "Task 1",
       isCompleted: false,
       isImportant: false,
+      isDeleted: false,
     },
     {
       id: 2,
       text: "Task 2",
       isCompleted: false,
       isImportant: true,
+      isDeleted: false,
     },
   ]);
 
@@ -32,6 +34,7 @@ function App() {
         text: inputValue,
         isCompleted: false,
         isImportant: false,
+        isDeleted: false,
       };
       setTodoList([...todoList, newTodo]);
       setInputValue("");
@@ -82,37 +85,47 @@ function App() {
     const newTodoList = todoList.filter((todo) => todo.id !== id);
     setTodoList(newTodoList);
   };
+
+  const todos = useMemo(
+    () =>
+      todoList.filter((todo) => {
+        if (!todo.text.includes(search)) {
+          return false;
+        }
+        switch (selectedFilter) {
+          case "All":
+            return true;
+          case "Important":
+            return todo.isImportant;
+          case "Completed":
+            return todo.isCompleted;
+          case "Deleted":
+            return todo.isDeleted;
+          default:
+            return true;
+        }
+      }),
+    [todoList, selectedFilter, search]
+  );
+
   return (
     <div className="container">
       <FilterPanel
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
+        todoList={todoList}
+        setSearch={setSearch}
       />
-      <h1>Todo App</h1>
-      <div className="form__input">
-        <input
-          type="text"
-          placeholder="Add a new task"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-        />
-        <button onClick={handleAddTodo}>Add</button>
-      </div>
-      <div className="todo__list">
-        {todoList.length ? (
-          todoList.map((todo) => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onCheckTodo={handleCheckTodo}
-              onHandleEdit={handleEdit}
-              onHandleDelete={handleDelete}
-            />
-          ))
-        ) : (
-          <h1>No task</h1>
-        )}
-      </div>
+      <TodoList
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        handleAddTodo={handleAddTodo}
+        todoList={todoList}
+        handleCheckTodo={handleCheckTodo}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+        todos={todos}
+      />
       {hide && (
         <Sidebar
           key={todoShow.id}
